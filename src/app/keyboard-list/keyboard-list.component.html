@@ -42,9 +42,12 @@
         >
           <mat-list-option
             *ngFor="let keymap of keymaps | filter: keymapFilter"
-            [value]="keymap.split(':')"
+            [value]="keymap"
           >
-            {{ keymap.split(":")[0] }}
+            <p>{{ keymap.name }}</p>
+            <span style="text-align: right; font-size: 0.7em">
+              {{ keymap.error }} {{ keymap["no-cpp"] ? "no-cpp" : "" }}
+            </span>
           </mat-list-option>
         </mat-selection-list>
       </cdk-virtual-scroll-viewport>
@@ -67,20 +70,27 @@
           </div>
         </div>
       </div>
-      <h2>Keymap: {{ keymap[0] }}</h2>
-      <div class="row" style="height: 40vh; overflow-y: auto">
-        <div class="col-xs-12">
-          <div>
-            <mat-form-field style="width: 90%">
-              <textarea
-                matInput
-                cdkTextareaAutosize
-                #autosize="cdkTextareaAutosize"
-                cdkAutosizeMinRows="1"
-                placeholder="Keymap JSON"
-                >{{ keymapJson }} </textarea
-              >
-            </mat-form-field>
+      <div *ngIf="keymap">
+        <h2>
+          Keymap: {{ keymap?.name }}
+          <a [href]="getKeymapGithubUrl()"> Github</a>
+          <a [href]="getKeymapJsonUrl()"> Raw</a>
+        </h2>
+
+        <div class="row" style="height: 40vh; overflow-y: auto">
+          <div class="col-xs-12">
+            <div>
+              <mat-form-field style="width: 90%">
+                <textarea
+                  matInput
+                  cdkTextareaAutosize
+                  #autosize="cdkTextareaAutosize"
+                  cdkAutosizeMinRows="1"
+                  placeholder="Keymap JSON"
+                  >{{ keymapJson }} </textarea
+                >
+              </mat-form-field>
+            </div>
           </div>
         </div>
       </div>

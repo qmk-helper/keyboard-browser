@@ -3,6 +3,12 @@ import { Component, NgZone, OnInit, ViewChild } from '@angular/core';
 import { MatSelectionListChange } from '@angular/material/list';
 import { take } from 'rxjs/operators';
 
+interface IKeymapMeta {
+  name: string;
+  path: string;
+  error: string;
+  'no-cpp': boolean;
+}
 @Component({
   selector: 'app-keyboard-list',
   templateUrl: './keyboard-list.component.html',
@@ -14,8 +20,8 @@ export class KeyboardListComponent implements OnInit {
   keyboardJson = '';
   keyboardFilter = '';
 
-  keymaps: string[];
-  keymap: string[] = [];
+  keymaps: IKeymapMeta[];
+  keymap: IKeymapMeta;
   keymapJson = '';
   keymapFilter = '';
   constructor(private ngZone: NgZone) {}
@@ -51,14 +57,14 @@ export class KeyboardListComponent implements OnInit {
     this.keyboardJson = '';
 
     this.keymaps = [];
-    this.keymap = [''];
+    this.keymap = undefined;
     this.keymapJson = '';
     fetch(
-      `https://raw.githubusercontent.com/qmk-helper/qmk-database/master/keymaps/${this.keyboard}/keymaps.txt`
+      `https://raw.githubusercontent.com/qmk-helper/qmk-database/master/keymaps/${this.keyboard}/keymaps.json`
     )
-      .then((response) => response.text())
+      .then((response) => response.json())
       .then((keymaps) => {
-        this.keymaps = keymaps.split(' ');
+        this.keymaps = keymaps;
         console.log(this.keymaps);
       });
 
@@ -72,11 +78,23 @@ export class KeyboardListComponent implements OnInit {
         this.triggerResize1();
       });
   }
+  getKeymapGithubUrl(): string {
+    if (this.keyboard && this.keymap?.name) {
+      return `https://github.com/qmk/qmk_firmware/tree/master/${this.keymap.path}`;
+    } else {
+      return '';
+    }
+  }
+  getKeymapJsonUrl(): string {
+    if (this.keyboard && this.keymap?.path) {
+      return `https://raw.githubusercontent.com/qmk-helper/qmk-database/master/keymaps/${this.keyboard}/${this.keymap.name}.keymap.json`;
+    } else {
+      return '';
+    }
+  }
   selectKeymap(event: MatSelectionListChange): void {
     this.keymap = event.option.value;
-    fetch(
-      `https://raw.githubusercontent.com/qmk-helper/qmk-database/master/keymaps/${this.keyboard}/${this.keymap[0]}.keymap.json`
-    )
+    fetch(this.getKeymapJsonUrl())
       .then((response) => response.text())
       .then((keymapJson) => {
         this.keymapJson = keymapJson;
