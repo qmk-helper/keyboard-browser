@@ -6,7 +6,7 @@
     "start": "ng serve",
     "build": "ng build --prod",
     "build:gh": "ng build --prod --base-href /keyboard-browser/",
-    "build:gh:dev": "ng build --prod --base-href /keyboard-browser/dev",
+    "build:gh:dev": "ng build --prod --base-href /keyboard-browser/dev/",
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e"
