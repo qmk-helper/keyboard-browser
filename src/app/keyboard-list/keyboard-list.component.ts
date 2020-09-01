@@ -1,5 +1,12 @@
 import { CdkTextareaAutosize } from '@angular/cdk/text-field';
-import { Component, NgZone, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  NgZone,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { MatSelectionListChange } from '@angular/material/list';
 import { take } from 'rxjs/operators';
 
@@ -24,6 +31,10 @@ export class KeyboardListComponent implements OnInit {
   keymap: IKeymapMeta;
   keymapJson = '';
   keymapFilter = '';
+
+  @Output() keymapSelected = new EventEmitter<string>();
+  @Output() keyboardSelected = new EventEmitter<string>();
+
   constructor(private ngZone: NgZone) {}
   @ViewChild('autosize1') autosize1: CdkTextareaAutosize;
   @ViewChild('autosize') autosize: CdkTextareaAutosize;
@@ -75,6 +86,7 @@ export class KeyboardListComponent implements OnInit {
       .then((keyboardJson) => {
         this.keyboardJson = keyboardJson;
         console.log(this.keyboardJson);
+        this.keyboardSelected.emit(this.keyboardJson);
         this.triggerResize1();
       });
   }
@@ -93,12 +105,14 @@ export class KeyboardListComponent implements OnInit {
     }
   }
   selectKeymap(event: MatSelectionListChange): void {
+    console.log('hfsdiofhsdiofhdiodfhiosdhfdhiosdfhsdio');
     this.keymap = event.option.value;
     fetch(this.getKeymapJsonUrl())
       .then((response) => response.text())
       .then((keymapJson) => {
         this.keymapJson = keymapJson;
         console.log(this.keymapJson);
+        this.keymapSelected.emit(this.keymapJson);
         this.triggerResize();
       });
   }
