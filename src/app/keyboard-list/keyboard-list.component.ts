@@ -79,14 +79,14 @@ export class KeyboardListComponent implements OnInit {
     }
   }
   getKeyboardJsonUrl(): string {
-    if (this.keyboardEntry && this.keymapEntry?.path) {
+    if (this.keyboardEntry) {
       return `https://raw.githubusercontent.com/qmk/qmk_firmware/master/keyboards/${this.keyboardEntry}/info.json`;
     } else {
       return '';
     }
   }
   getKeyboardGithubUrl(): string {
-    if (this.keyboardEntry && this.keymapEntry?.name) {
+    if (this.keyboardEntry) {
       return `https://github.com/qmk/qmk_firmware/tree/master/keyboards/${this.keyboardEntry}`;
     } else {
       return '';
