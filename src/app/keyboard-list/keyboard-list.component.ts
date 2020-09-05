@@ -1,9 +1,7 @@
-import { CdkTextareaAutosize } from '@angular/cdk/text-field';
-import { Component, NgZone, OnInit, ViewChild } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { MatSelectionListChange } from '@angular/material/list';
-import { take } from 'rxjs/operators';
 
-interface IKeymapMeta {
+interface IKeymapDBEntry {
   name: string;
   path: string;
   error: string;
@@ -15,91 +13,89 @@ interface IKeymapMeta {
   styleUrls: ['./keyboard-list.component.scss'],
 })
 export class KeyboardListComponent implements OnInit {
-  keyboards: string[];
-  keyboard: string;
-  keyboardJson = '';
+  keyboardDb: string[];
+  keyboardEntry: string;
+  keyboardJson: any;
   keyboardFilter = '';
 
-  keymaps: IKeymapMeta[];
-  keymap: IKeymapMeta;
-  keymapJson = '';
+  keymapDb: IKeymapDBEntry[];
+  keymapEntry: IKeymapDBEntry;
+  keymapJson: any;
   keymapFilter = '';
-  constructor(private ngZone: NgZone) {}
-  @ViewChild('autosize1') autosize1: CdkTextareaAutosize;
-  @ViewChild('autosize') autosize: CdkTextareaAutosize;
 
-  triggerResize1(): void {
-    // Wait for changes to be applied, then trigger textarea resize.
-    this.ngZone.onStable
-      .pipe(take(1))
-      .subscribe(() => this.autosize1.resizeToFitContent(true));
-  }
-  triggerResize(): void {
-    // Wait for changes to be applied, then trigger textarea resize.
-    this.ngZone.onStable
-      .pipe(take(1))
-      .subscribe(() => this.autosize.resizeToFitContent(true));
-  }
+  @Output() keymapSelected = new EventEmitter<string>();
+  @Output() keyboardSelected = new EventEmitter<string>();
+
+  constructor() {}
+
   ngOnInit(): void {
-    console.log('helloWorld');
     fetch(
       'https://raw.githubusercontent.com/qmk-helper/qmk-database/master/keyboards.txt'
     )
       .then((response) => response.text())
       .then((keyboards) => {
-        this.keyboards = keyboards.split('\n');
-        console.log(this.keyboards);
+        this.keyboardDb = keyboards.split('\n');
       });
   }
 
   selectKeyboard(event: MatSelectionListChange): void {
-    this.keyboard = event.option.value;
-    this.keyboardJson = '';
+    this.keyboardEntry = event.option.value;
 
-    this.keymaps = [];
-    this.keymap = undefined;
-    this.keymapJson = '';
+    this.keymapDb = [];
+    this.keymapEntry = undefined;
+    this.keymapJson = undefined;
+
     fetch(
-      `https://raw.githubusercontent.com/qmk-helper/qmk-database/master/keymaps/${this.keyboard}/keymaps.json`
+      `https://raw.githubusercontent.com/qmk-helper/qmk-database/master/keymaps/${this.keyboardEntry}/keymaps.json`
     )
       .then((response) => response.json())
       .then((keymaps) => {
-        this.keymaps = keymaps;
-        console.log(this.keymaps);
+        this.keymapDb = keymaps;
       });
 
     fetch(
-      `https://raw.githubusercontent.com/qmk/qmk_firmware/master/keyboards/${this.keyboard}/info.json`
+      `https://raw.githubusercontent.com/qmk/qmk_firmware/master/keyboards/${this.keyboardEntry}/info.json`
     )
-      .then((response) => response.text())
+      .then((response) => response.json())
       .then((keyboardJson) => {
         this.keyboardJson = keyboardJson;
-        console.log(this.keyboardJson);
-        this.triggerResize1();
+      });
+  }
+
+  selectKeymap(event: MatSelectionListChange): void {
+    this.keymapEntry = event.option.value;
+    fetch(this.getKeymapJsonUrl())
+      .then((response) => response.json())
+      .then((keymapJson) => {
+        this.keymapJson = keymapJson;
       });
   }
   getKeymapGithubUrl(): string {
-    if (this.keyboard && this.keymap?.name) {
-      return `https://github.com/qmk/qmk_firmware/tree/master/${this.keymap.path}`;
+    if (this.keyboardEntry && this.keymapEntry?.name) {
+      return `https://github.com/qmk/qmk_firmware/tree/master/${this.keymapEntry.path}`;
+    } else {
+      return '';
+    }
+  }
+  getKeyboardJsonUrl(): string {
+    if (this.keyboardEntry) {
+      return `https://raw.githubusercontent.com/qmk/qmk_firmware/master/keyboards/${this.keyboardEntry}/info.json`;
+    } else {
+      return '';
+    }
+  }
+  getKeyboardGithubUrl(): string {
+    if (this.keyboardEntry) {
+      return `https://github.com/qmk/qmk_firmware/tree/master/keyboards/${this.keyboardEntry}`;
     } else {
       return '';
     }
   }
   getKeymapJsonUrl(): string {
-    if (this.keyboard && this.keymap?.path) {
-      return `https://raw.githubusercontent.com/qmk-helper/qmk-database/master/keymaps/${this.keyboard}/${this.keymap.name}.keymap.json`;
+    if (this.keyboardEntry && this.keymapEntry?.path) {
+      return `https://raw.githubusercontent.com/qmk-helper/qmk-database/master/keymaps/${this.keyboardEntry}/${this.keymapEntry.name}.keymap.json`;
     } else {
       return '';
     }
-  }
-  selectKeymap(event: MatSelectionListChange): void {
-    this.keymap = event.option.value;
-    fetch(this.getKeymapJsonUrl())
-      .then((response) => response.text())
-      .then((keymapJson) => {
-        this.keymapJson = keymapJson;
-        console.log(this.keymapJson);
-        this.triggerResize();
-      });
   }
 }

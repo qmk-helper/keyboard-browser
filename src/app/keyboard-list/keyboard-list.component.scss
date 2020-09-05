@@ -1,5 +1,12 @@
 .scrollable-viewport {
-  height: 90vh;
+  height: calc(100% - 70px);
+  min-height: 40vh;
 
   //   border: 1px solid black;
+}
+.warning {
+  background-color: rgb(253, 237, 216);
+}
+.error {
+  background-color: rgb(255, 217, 222);
 }
