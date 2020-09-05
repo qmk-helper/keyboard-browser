@@ -16,31 +16,27 @@ export class KeyboardViewerComponent implements OnInit {
   kleKeyboards: KleKeyboard[] = [];
 
   ngOnInit(): void {}
-  test(qmkKeyboard, qmkKeymap): void {
+  test(qmkKeyboard: any, qmkKeymap: any): void {
     this.kleKeyboards = [];
-    console.log('dfsfsdfds');
-    console.log(typeof qmkKeymap);
-    console.log(qmkKeyboard);
 
     const kc = new KeyboardConverter();
     kc.importQmkKeyboard(qmkKeyboard);
     kc.importQmkKeymap(qmkKeymap);
-    console.log(kc.keyboard);
-    const kleConverter = new KleConverter(kc.keyboard);
+
     const keymap = kc.keyboard.keymaps[0];
     if (keymap.layout === 'LAYOUT_preonic_grid') {
       console.log('adjust layout');
       keymap.layout = 'LAYOUT_ortho_5x12';
     }
     const layout = kc.keyboard.layouts.find((l) => l.name === keymap?.layout);
-    console.log(keymap);
+
     keymap.layers.forEach((layer) => {
+      const kleConverter = new KleConverter(kc.keyboard);
       kleConverter.generateKleKeys(layout, layer);
-      console.log(layer);
-      this.kleKeyboards.push(
-        JSON.parse(JSON.stringify(kleConverter.kleKeyboard))
-      );
-      console.log(this.kleKeyboards);
+
+      this.kleKeyboards.push(kleConverter.kleKeyboard);
+      console.log(JSON.stringify(kleConverter.serialize()).slice(1, -1));
+      // console.log(this.kleKeyboards);
     });
   }
 }

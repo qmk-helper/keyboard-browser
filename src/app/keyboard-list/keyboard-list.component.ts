@@ -59,7 +59,6 @@ export class KeyboardListComponent implements OnInit {
       .then((response) => response.text())
       .then((keyboards) => {
         this.keyboards = keyboards.split('\n');
-        console.log(this.keyboards);
       });
   }
 
@@ -76,7 +75,6 @@ export class KeyboardListComponent implements OnInit {
       .then((response) => response.json())
       .then((keymaps) => {
         this.keymaps = keymaps;
-        console.log(this.keymaps);
       });
 
     fetch(
@@ -85,7 +83,6 @@ export class KeyboardListComponent implements OnInit {
       .then((response) => response.text())
       .then((keyboardJson) => {
         this.keyboardJson = keyboardJson;
-        console.log(this.keyboardJson);
         this.keyboardSelected.emit(this.keyboardJson);
         this.triggerResize1();
       });
@@ -111,7 +108,6 @@ export class KeyboardListComponent implements OnInit {
       .then((response) => response.text())
       .then((keymapJson) => {
         this.keymapJson = keymapJson;
-        console.log(this.keymapJson);
         this.keymapSelected.emit(this.keymapJson);
         this.triggerResize();
       });

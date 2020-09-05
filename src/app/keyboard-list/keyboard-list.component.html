@@ -1,5 +1,5 @@
 <div class="row">
-  <div class="col-xs-3">
+  <div class="col-xs-12 col-sm-6 col-md-3">
     <mat-form-field style="width: 90%">
       <input
         matInput
@@ -7,7 +7,11 @@
         placeholder="Search Keyboards"
       />
     </mat-form-field>
-    <cdk-virtual-scroll-viewport itemSize="50" class="scrollable-viewport">
+    <cdk-virtual-scroll-viewport
+      itemSize="50"
+      class="scrollable-viewport"
+      style="width: 90%"
+    >
       <mat-selection-list
         #keyboardListItem
         [multiple]="false"
@@ -22,12 +26,16 @@
       </mat-selection-list>
     </cdk-virtual-scroll-viewport>
   </div>
-  <div class="col-xs-3">
+  <div class="col-xs-12 col-sm-6 col-md-3">
     <mat-form-field style="width: 90%">
       <input matInput [(ngModel)]="keymapFilter" placeholder="Search Keymaps" />
     </mat-form-field>
 
-    <cdk-virtual-scroll-viewport itemSize="50" class="scrollable-viewport">
+    <cdk-virtual-scroll-viewport
+      itemSize="50"
+      class="scrollable-viewport"
+      style="width: 90%"
+    >
       <mat-selection-list
         #keymapListItem
         [multiple]="false"
@@ -36,6 +44,7 @@
         <mat-list-option
           *ngFor="let keymap of keymaps | filter: keymapFilter"
           [value]="keymap"
+          [ngClass]="{ warning: keymap['no-cpp'], error: keymap.error }"
         >
           <p>{{ keymap.name }}</p>
           <span style="text-align: right; font-size: 0.7em">
@@ -45,8 +54,8 @@
       </mat-selection-list>
     </cdk-virtual-scroll-viewport>
   </div>
-  <div class="col-xs-6">
-    <h2>Keyboard: {{ keyboard }}</h2>
+  <div class="col-xs-12 col-md-6">
+    <p *ngIf="keyboard">Keyboard {{ keyboard }}</p>
     <div class="row" style="overflow-y: auto; max-height: 40vh">
       <div class="col-xs-12">
         <div>
