@@ -15,7 +15,8 @@
       <mat-selection-list
         #keyboardListItem
         [multiple]="false"
-        (selectionChange)="selectKeyboard($event)"
+        [(ngModel)]="selectedKeyboard"
+        (selectionChange)="selectKeyboardEvent($event)"
       >
         <mat-list-option
           *cdkVirtualFor="let keyboard of keyboardDb | filter: keyboardFilter"
