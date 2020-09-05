@@ -1,4 +1,4 @@
-import { Component, ViewChild } from '@angular/core';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-root',
@@ -7,23 +7,4 @@ import { Component, ViewChild } from '@angular/core';
 })
 export class AppComponent {
   title = 'keyboard-browser';
-
-  @ViewChild('test') child;
-
-  qmkKeyboard: any;
-  qmkKeymap: any;
-
-  storeKeyboard(qmkKeyboard): void {
-    this.qmkKeyboard = JSON.parse(qmkKeyboard);
-  }
-  storeKeymap(qmkKeymap): void {
-    this.qmkKeymap = JSON.parse(qmkKeymap);
-
-    if (!this.qmkKeyboard) {
-      console.log('Missing Keyboard');
-      return;
-    }
-
-    this.child.test(this.qmkKeyboard, this.qmkKeymap);
-  }
 }

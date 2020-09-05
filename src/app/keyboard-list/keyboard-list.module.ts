@@ -5,6 +5,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
 import { MatSelectModule } from '@angular/material/select';
+import { KeyboardViewerModule } from '../keyboard-viewer/keyboard-viewer.module';
 import { FilterPipe } from './filter.pipe';
 import { KeyboardListComponent } from './keyboard-list.component';
 @NgModule({
@@ -17,6 +18,7 @@ import { KeyboardListComponent } from './keyboard-list.component';
     MatListModule,
     MatInputModule,
     ScrollingModule,
+    KeyboardViewerModule,
   ],
   exports: [KeyboardListComponent],
 })

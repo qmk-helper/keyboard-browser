@@ -18,7 +18,7 @@
         (selectionChange)="selectKeyboard($event)"
       >
         <mat-list-option
-          *cdkVirtualFor="let keyboard of keyboards | filter: keyboardFilter"
+          *cdkVirtualFor="let keyboard of keyboardDb | filter: keyboardFilter"
           [value]="keyboard"
         >
           {{ keyboard }}
@@ -26,7 +26,7 @@
       </mat-selection-list>
     </cdk-virtual-scroll-viewport>
   </div>
-  <div class="col-xs-12 col-sm-6 col-md-3">
+  <div class="col-xs-12 col-sm-6 col-md-3" style="height: 100%">
     <mat-form-field style="width: 90%">
       <input matInput [(ngModel)]="keymapFilter" placeholder="Search Keymaps" />
     </mat-form-field>
@@ -42,58 +42,52 @@
         (selectionChange)="selectKeymap($event)"
       >
         <mat-list-option
-          *ngFor="let keymap of keymaps | filter: keymapFilter"
-          [value]="keymap"
-          [ngClass]="{ warning: keymap['no-cpp'], error: keymap.error }"
+          *ngFor="let keymapEntry of keymapDb | filter: keymapFilter"
+          [value]="keymapEntry"
+          [ngClass]="{
+            warning: keymapEntry['no-cpp'],
+            error: keymapEntry.error
+          }"
         >
-          <p>{{ keymap.name }}</p>
+          <p>{{ keymapEntry.name }}</p>
           <span style="text-align: right; font-size: 0.7em">
-            {{ keymap.error }} {{ keymap["no-cpp"] ? "no-cpp" : "" }}
+            {{ keymapEntry.error }} {{ keymapEntry["no-cpp"] ? "no-cpp" : "" }}
           </span>
         </mat-list-option>
       </mat-selection-list>
     </cdk-virtual-scroll-viewport>
   </div>
-  <div class="col-xs-12 col-md-6">
-    <p *ngIf="keyboard">Keyboard {{ keyboard }}</p>
-    <div class="row" style="overflow-y: auto; max-height: 40vh">
-      <div class="col-xs-12">
-        <div>
-          <mat-form-field style="width: 90%">
-            <textarea
-              matInput
-              cdkTextareaAutosize
-              #autosize1="cdkTextareaAutosize"
-              cdkAutosizeMinRows="1"
-              placeholder="Keyboard JSON"
-              >{{ keyboardJson }} </textarea
-            >
-          </mat-form-field>
+  <div class="col-xs-12 col-md-6" style="min-height: 85vh">
+    <div class="row">
+      <div class="col-xs-12 col-sm-6">
+        <div *ngIf="keyboardEntry">
+          <h2>Keyboard {{ keyboardEntry }}</h2>
+          <ul>
+            <li>
+              <a [href]="getKeyboardGithubUrl()"> View on Github</a>
+            </li>
+            <li>
+              <a [href]="getKeyboardJsonUrl()"> Get info.json</a>
+            </li>
+          </ul>
         </div>
       </div>
-    </div>
-    <div *ngIf="keymap">
-      <h2>
-        Keymap: {{ keymap?.name }}
-        <a [href]="getKeymapGithubUrl()"> Github</a>
-        <a [href]="getKeymapJsonUrl()"> Raw</a>
-      </h2>
-
-      <div class="row" style="overflow-y: auto; max-height: 40vh">
-        <div class="col-xs-12">
-          <div>
-            <mat-form-field style="width: 90%">
-              <textarea
-                matInput
-                cdkTextareaAutosize
-                #autosize="cdkTextareaAutosize"
-                cdkAutosizeMinRows="1"
-                placeholder="Keymap JSON"
-                >{{ keymapJson }} </textarea
-              >
-            </mat-form-field>
-          </div>
+      <div class="col-xs-12 col-sm-6">
+        <div *ngIf="keymapEntry">
+          <h2>Keymap {{ keymapEntry?.name }}</h2>
+          <li>
+            <a [href]="getKeymapGithubUrl()"> View on Github</a>
+          </li>
+          <li>
+            <a [href]="getKeymapJsonUrl()"> Get info.json</a>
+          </li>
         </div>
+      </div>
+      <div class="col-xs-12" style="overflow: scroll">
+        <app-keyboard-viewer
+          [qmkKeyboard]="keyboardJson"
+          [qmkKeymap]="keymapJson"
+        ></app-keyboard-viewer>
       </div>
     </div>
   </div>

@@ -1,5 +1,3 @@
-<p>KLE Raw Data</p>
-
-<div *ngFor="let kleKeyboard of kleKeyboards">
-  <app-keymap-renderer [kleKeyboard]="kleKeyboard"></app-keymap-renderer>
+<div *ngFor="let view of kleViews">
+  <app-keymap-renderer [kleKeyboard]="view"></app-keymap-renderer>
 </div>
