@@ -29,7 +29,6 @@ export class KeyboardListComponent implements OnInit {
   constructor() {}
 
   ngOnInit(): void {
-    console.log('helloWorld');
     fetch(
       'https://raw.githubusercontent.com/qmk-helper/qmk-database/master/keyboards.txt'
     )

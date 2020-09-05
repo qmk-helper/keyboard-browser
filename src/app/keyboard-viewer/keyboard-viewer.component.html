@@ -8,7 +8,7 @@
   Copy keyboard for keyboard-layot-editor.com
 </button>
 
-<div *ngFor="let kleConverter of kleConverters">
+<div *ngFor="let kleConverter of kleConverters; index as i">
   <button
     mat-raised-button
     color="primary"
@@ -17,6 +17,8 @@
   >
     Copy layer for keyboard-layot-editor.com
   </button>
+  <p *ngIf="!qmkKeymap">{{ kleConverter.keyboard.layouts[i].name }}</p>
+  <p *ngIf="qmkKeymap">LAYER_{{ i }}</p>
   <app-keymap-renderer
     [kleKeyboard]="kleConverter.kleKeyboard"
   ></app-keymap-renderer>

@@ -10,6 +10,8 @@ import {
   KeyboardConverter,
   KleConverter,
 } from '@qmk-helper/keyboard-converter';
+import { LAYOUT_LOOKUP } from './layout-lookup';
+
 @Component({
   selector: 'app-keyboard-viewer',
   templateUrl: './keyboard-viewer.component.html',
@@ -26,6 +28,7 @@ export class KeyboardViewerComponent implements OnInit, OnChanges {
   qmkKeymap: any;
   panelOpenState = false;
   keyboardConverter: KeyboardConverter;
+  layoutLookupName: string;
 
   constructor(private clipboard: Clipboard) {
     this.keyboardConverter = new KeyboardConverter();
@@ -33,7 +36,6 @@ export class KeyboardViewerComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    console.log(changes);
     if (changes.qmkKeyboard && this.qmkKeyboard) {
       this.keyboardConverter.importQmkKeyboard(this.qmkKeyboard);
       if (!this.qmkKeymap) {
@@ -41,14 +43,11 @@ export class KeyboardViewerComponent implements OnInit, OnChanges {
       }
     }
     if (changes.qmkKeymap && this.qmkKeymap) {
-      console.log('fkdlpsfkdpso');
       this.keyboardConverter.importQmkKeymap(this.qmkKeymap);
       this.renderLayers();
     }
   }
   renderLayouts(): void {
-    console.log('Render Layputs');
-
     this.kleConverters = [];
     this.keyboardConverter.keyboard.layouts.forEach((layout) => {
       const kleConverter = new KleConverter(this.keyboardConverter.keyboard);
@@ -58,24 +57,38 @@ export class KeyboardViewerComponent implements OnInit, OnChanges {
     });
   }
   renderLayers(): void {
-    console.log('Render Layers');
     this.kleConverters = [];
     const keymap = this.keyboardConverter.keyboard.keymaps.find(
       (l) => l.name === this.qmkKeymap.keymap
     );
-    if (keymap.layout === 'LAYOUT_preonic_grid') {
-      console.log('adjust layout');
-      keymap.layout = 'LAYOUT_ortho_5x12';
-    }
-    const layout = this.keyboardConverter.keyboard.layouts.find(
+
+    let layout = this.keyboardConverter.keyboard.layouts.find(
       (l) => l.name === keymap?.layout
     );
-
+    if (!layout) {
+      layout = this.keyboardConverter.keyboard.layouts.find(
+        (l) => l.name === LAYOUT_LOOKUP[keymap?.layout]
+      );
+    }
+    if (!layout) {
+      this.layoutLookupName =
+        window.prompt(
+          'This keymap uses an unknown LAYOUT name: ' +
+            keymap?.layout +
+            '. Please enter the name of the layout to be used',
+          this.layoutLookupName
+        ) || undefined;
+      layout = this.keyboardConverter.keyboard.layouts.find(
+        (l) => l.name === this.layoutLookupName
+      );
+    }
+    if (!layout) {
+      window.alert('No matching Layout');
+      return;
+    }
     keymap.layers.forEach((layer) => {
-      console.log('fdsefed');
       const kleConverter = new KleConverter(this.keyboardConverter.keyboard);
       kleConverter.generateKleKeys(layout, layer);
-
       this.kleConverters.push(kleConverter);
     });
   }
@@ -84,8 +97,6 @@ export class KeyboardViewerComponent implements OnInit, OnChanges {
       const kleConverter = new KleConverter(this.keyboardConverter.keyboard);
       kleConverter.useKeymap(this.qmkKeymap.keymap);
       const test = JSON.stringify(kleConverter.serialize()).slice(1, -1);
-      console.log(test);
-
       this.clipboard.copy(test);
     }
   }
