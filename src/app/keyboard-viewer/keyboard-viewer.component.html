@@ -1,3 +1,23 @@
-<div *ngFor="let view of kleViews">
-  <app-keymap-renderer [kleKeyboard]="view"></app-keymap-renderer>
+<button
+  mat-raised-button
+  color="primary"
+  (click)="exportKle()"
+  style="margin: 1em"
+  *ngIf="qmkKeyboard && qmkKeymap"
+>
+  Copy keyboard for keyboard-layot-editor.com
+</button>
+
+<div *ngFor="let kleConverter of kleConverters">
+  <button
+    mat-raised-button
+    color="primary"
+    [cdkCopyToClipboard]="kleConverter.serialize() | json | slice: 1:-1"
+    style="margin: 1em"
+  >
+    Copy layer for keyboard-layot-editor.com
+  </button>
+  <app-keymap-renderer
+    [kleKeyboard]="kleConverter.kleKeyboard"
+  ></app-keymap-renderer>
 </div>

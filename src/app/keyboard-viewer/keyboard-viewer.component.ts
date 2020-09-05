@@ -1,3 +1,4 @@
+import { Clipboard } from '@angular/cdk/clipboard';
 import {
   Component,
   Input,
@@ -9,7 +10,6 @@ import {
   KeyboardConverter,
   KleConverter,
 } from '@qmk-helper/keyboard-converter';
-import { KleKeyboard } from '@qmk-helper/kle-serial';
 @Component({
   selector: 'app-keyboard-viewer',
   templateUrl: './keyboard-viewer.component.html',
@@ -17,18 +17,19 @@ import { KleKeyboard } from '@qmk-helper/kle-serial';
 })
 export class KeyboardViewerComponent implements OnInit, OnChanges {
   kleKeyboardString: string;
-  kleViews: KleKeyboard[] = [];
+  kleConverters: KleConverter[] = [];
 
   @Input()
   qmkKeyboard: any;
 
   @Input()
   qmkKeymap: any;
-
+  panelOpenState = false;
   keyboardConverter: KeyboardConverter;
 
-  constructor() {
+  constructor(private clipboard: Clipboard) {
     this.keyboardConverter = new KeyboardConverter();
+    this.keyboardConverter.exportKleKeyboard();
   }
 
   ngOnChanges(changes: SimpleChanges): void {
@@ -48,19 +49,17 @@ export class KeyboardViewerComponent implements OnInit, OnChanges {
   renderLayouts(): void {
     console.log('Render Layputs');
 
-    this.kleViews = [];
+    this.kleConverters = [];
     this.keyboardConverter.keyboard.layouts.forEach((layout) => {
       const kleConverter = new KleConverter(this.keyboardConverter.keyboard);
       kleConverter.generateKleKeys(layout);
 
-      this.kleViews.push(kleConverter.kleKeyboard);
-      // console.log(JSON.stringify(kleConverter.serialize()).slice(1, -1));
-      // console.log(this.kleKeyboards);
+      this.kleConverters.push(kleConverter);
     });
   }
   renderLayers(): void {
     console.log('Render Layers');
-    this.kleViews = [];
+    this.kleConverters = [];
     const keymap = this.keyboardConverter.keyboard.keymaps.find(
       (l) => l.name === this.qmkKeymap.keymap
     );
@@ -77,10 +76,18 @@ export class KeyboardViewerComponent implements OnInit, OnChanges {
       const kleConverter = new KleConverter(this.keyboardConverter.keyboard);
       kleConverter.generateKleKeys(layout, layer);
 
-      this.kleViews.push(kleConverter.kleKeyboard);
-      // console.log(JSON.stringify(kleConverter.serialize()).slice(1, -1));
-      console.log(this.kleViews);
+      this.kleConverters.push(kleConverter);
     });
+  }
+  exportKle(): void {
+    if (this.qmkKeymap && this.qmkKeyboard) {
+      const kleConverter = new KleConverter(this.keyboardConverter.keyboard);
+      kleConverter.useKeymap(this.qmkKeymap.keymap);
+      const test = JSON.stringify(kleConverter.serialize()).slice(1, -1);
+      console.log(test);
+
+      this.clipboard.copy(test);
+    }
   }
   ngOnInit(): void {}
 }

@@ -59,6 +59,65 @@
   </div>
   <div class="col-xs-12 col-md-6" style="min-height: 85vh">
     <div class="row">
+      <div class="col-xs-12">
+        <mat-accordion>
+          <mat-expansion-panel expanded>
+            <mat-expansion-panel-header>
+              <mat-panel-title>Description </mat-panel-title>
+            </mat-expansion-panel-header>
+            <h2>Layout Mapping</h2>
+            <p>
+              If only a keyboard is selected all the available layouts get
+              displayed. Once a keymap is selected, the app tries to find a
+              matching layout by name. Some keyboards/keymaps use aliases for
+              layout naming. The mapping by the QMK configurator is used then,
+              otherwise you can try to overwrite the layout name.
+            </p>
+
+            <h2>Keymap Generation</h2>
+            <p>
+              All keyboards that have a info.json file in the QMK firmware
+              repository are lsited here. You can explore different keymaps and
+              get inspiritation for your own perfect layout. For some keymaps
+              the automatic conversion does not work or may be missing macro
+              codes.
+            </p>
+            <p>
+              At the moment this website uses a git repository (<a
+                href="https://github.com/qmk-helper/qmk-database"
+                >qmk-database</a
+              >) to store all keymaps of
+              <a href="https://github.com/qmk/qmk_firmware">QMK</a> and only
+              gets updated periodicly. The keymaps are generated with code by
+              Erovia which is not yet in the main branch of QMK (see
+              <a href="https://github.com/qmk/qmk_firmware/pull/8817">PR 8817</a
+              >). Once the PR is merged the updates can be automated.
+            </p>
+
+            <h2>Export</h2>
+            <h4><a href="https://config.qmk.fm/">QMK configurator</a></h4>
+            <p>
+              The keymaps can be used with the
+              <a href="https://config.qmk.fm/">QMK configurator</a>, depending
+              on the keymap the conversion may not be perfect. You can copy the
+              link address of the keymap.json and directly enter the URL in the
+              configurator.
+            </p>
+            <h4>
+              <a href="http://www.keyboard-layout-editor.com/"
+                >Keyboard Layout Editor</a
+              >
+            </h4>
+            <p>
+              If you want to print or edit the visualisation the keyboard can
+              also be converted for use with
+              <a href="http://www.keyboard-layout-editor.com/">KLE</a>. You can
+              copy the complete keyboard or just individual layers. the code can
+              then be pasted as raw data at KLE.
+            </p>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </div>
       <div class="col-xs-12 col-sm-6">
         <div *ngIf="keyboardEntry">
           <h2>Keyboard {{ keyboardEntry }}</h2>
@@ -79,8 +138,7 @@
             <a [href]="getKeymapGithubUrl()"> View on Github</a>
           </li>
           <li>
-            <a [href]="getKeymapJsonUrl()"> Get keymap.json</a> Can be imported
-            in <a href="https://config.qmk.fm/">QMK Configurator</a>
+            <a [href]="getKeymapJsonUrl()"> Get keymap.json</a>
           </li>
         </div>
       </div>
