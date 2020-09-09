@@ -21,8 +21,11 @@
         <mat-list-option
           *cdkVirtualFor="let keyboard of keyboardDb | filter: keyboardFilter"
           [value]="keyboard"
+          [ngClass]="{
+            error: keyboard.path === null
+          }"
         >
-          {{ keyboard }}
+          {{ keyboard.name }}
         </mat-list-option>
       </mat-selection-list>
     </cdk-virtual-scroll-viewport>
