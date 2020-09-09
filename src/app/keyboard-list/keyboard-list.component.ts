@@ -40,11 +40,12 @@ export class KeyboardListComponent implements OnInit {
     this.route.queryParams.subscribe((params) => {
       this.keyboardFilter = params.keyboard;
       console.log(params);
-      if (this.keyboardDb.includes(params.keyboard)) {
-        console.log('fdsiofhdios');
-        console.log(this.selectedKeyboard);
-        this.selectedKeyboard = [params.keyboard];
-        this.setKeyboard(params.keyboard);
+      const queryKeyboard = this.keyboardDb.find((dbEntry) => {
+        return dbEntry.name === params.keyboard;
+      });
+      if (queryKeyboard) {
+        this.selectedKeyboard = [queryKeyboard];
+        this.setKeyboard(queryKeyboard);
       }
     });
   }
@@ -70,18 +71,30 @@ export class KeyboardListComponent implements OnInit {
     fetch(
       `https://raw.githubusercontent.com/qmk/qmk_firmware/master/${this.keyboardEntry.path}`
     )
-      .then((response) => response.json())
-      .then((keyboardJson) => {
-        this.keyboardJson = keyboardJson;
+      .then(async (response) => {
+        if (response.ok) {
+          this.keyboardJson = await response.json();
+        } else {
+          alert('Unable to find info.json');
+        }
+      })
+      .catch((reason) => {
+        alert('Unable to load info.json');
       });
   }
 
   selectKeymap(event: MatSelectionListChange): void {
     this.keymapEntry = event.option.value;
     fetch(this.getKeymapJsonUrl())
-      .then((response) => response.json())
-      .then((keymapJson) => {
-        this.keymapJson = keymapJson;
+      .then(async (response) => {
+        if (response.ok) {
+          this.keymapJson = await response.json();
+        } else {
+          alert('Unable to find keymap.json');
+        }
+      })
+      .catch((reason) => {
+        alert('Unable to load keymap.json');
       });
   }
   getKeymapGithubUrl(): string {
