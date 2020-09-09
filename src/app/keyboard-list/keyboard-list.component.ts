@@ -1,7 +1,7 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { MatSelectionListChange } from '@angular/material/list';
 import { ActivatedRoute } from '@angular/router';
-interface IKeymapDBEntry {
+interface IDbEntry {
   name: string;
   path: string;
   error: string;
@@ -13,14 +13,14 @@ interface IKeymapDBEntry {
   styleUrls: ['./keyboard-list.component.scss'],
 })
 export class KeyboardListComponent implements OnInit {
-  keyboardDb: string[];
-  keyboardEntry: string;
+  keyboardDb: IDbEntry[];
+  keyboardEntry: IDbEntry;
   keyboardJson: any;
   keyboardFilter = '';
   selectedKeyboard;
 
-  keymapDb: IKeymapDBEntry[];
-  keymapEntry: IKeymapDBEntry;
+  keymapDb: IDbEntry[];
+  keymapEntry: IDbEntry;
   keymapJson: any;
   keymapFilter = '';
 
@@ -31,20 +31,21 @@ export class KeyboardListComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     await fetch(
-      'https://raw.githubusercontent.com/qmk-helper/qmk-database/master/keyboards.txt'
+      'https://raw.githubusercontent.com/qmk-helper/qmk-database/master/keyboards.json'
     )
-      .then((response) => response.text())
+      .then((response) => response.json())
       .then((keyboards) => {
-        this.keyboardDb = keyboards.split('\n');
+        this.keyboardDb = keyboards;
       });
     this.route.queryParams.subscribe((params) => {
       this.keyboardFilter = params.keyboard;
       console.log(params);
-      if (this.keyboardDb.includes(params.keyboard)) {
-        console.log('fdsiofhdios');
-        console.log(this.selectedKeyboard);
-        this.selectedKeyboard = [params.keyboard];
-        this.setKeyboard(params.keyboard);
+      const queryKeyboard = this.keyboardDb.find((dbEntry) => {
+        return dbEntry.name === params.keyboard;
+      });
+      if (queryKeyboard) {
+        this.selectedKeyboard = [queryKeyboard];
+        this.setKeyboard(queryKeyboard);
       }
     });
   }
@@ -52,15 +53,15 @@ export class KeyboardListComponent implements OnInit {
   selectKeyboardEvent(event: MatSelectionListChange): void {
     this.setKeyboard(event.option.value);
   }
-  setKeyboard(keyboardName: string): void {
-    this.keyboardEntry = keyboardName;
+  setKeyboard(keyboard: IDbEntry): void {
+    this.keyboardEntry = keyboard;
 
     this.keymapDb = [];
     this.keymapEntry = undefined;
     this.keymapJson = undefined;
 
     fetch(
-      `https://raw.githubusercontent.com/qmk-helper/qmk-database/master/keymaps/${this.keyboardEntry}/keymaps.json`
+      `https://raw.githubusercontent.com/qmk-helper/qmk-database/master/keymaps/${this.keyboardEntry.name}/keymaps.json`
     )
       .then((response) => response.json())
       .then((keymaps) => {
@@ -68,20 +69,32 @@ export class KeyboardListComponent implements OnInit {
       });
 
     fetch(
-      `https://raw.githubusercontent.com/qmk/qmk_firmware/master/keyboards/${this.keyboardEntry}/info.json`
+      `https://raw.githubusercontent.com/qmk/qmk_firmware/master/${this.keyboardEntry.path}`
     )
-      .then((response) => response.json())
-      .then((keyboardJson) => {
-        this.keyboardJson = keyboardJson;
+      .then(async (response) => {
+        if (response.ok) {
+          this.keyboardJson = await response.json();
+        } else {
+          alert('Unable to find info.json');
+        }
+      })
+      .catch((reason) => {
+        alert('Unable to load info.json');
       });
   }
 
   selectKeymap(event: MatSelectionListChange): void {
     this.keymapEntry = event.option.value;
     fetch(this.getKeymapJsonUrl())
-      .then((response) => response.json())
-      .then((keymapJson) => {
-        this.keymapJson = keymapJson;
+      .then(async (response) => {
+        if (response.ok) {
+          this.keymapJson = await response.json();
+        } else {
+          alert('Unable to find keymap.json');
+        }
+      })
+      .catch((reason) => {
+        alert('Unable to load keymap.json');
       });
   }
   getKeymapGithubUrl(): string {
@@ -93,21 +106,21 @@ export class KeyboardListComponent implements OnInit {
   }
   getKeyboardJsonUrl(): string {
     if (this.keyboardEntry) {
-      return `https://raw.githubusercontent.com/qmk/qmk_firmware/master/keyboards/${this.keyboardEntry}/info.json`;
+      return `https://raw.githubusercontent.com/qmk/qmk_firmware/master/${this.keyboardEntry.path}`;
     } else {
       return '';
     }
   }
   getKeyboardGithubUrl(): string {
     if (this.keyboardEntry) {
-      return `https://github.com/qmk/qmk_firmware/tree/master/keyboards/${this.keyboardEntry}`;
+      return `https://github.com/qmk/qmk_firmware/tree/master/keyboards/${this.keyboardEntry.name}`;
     } else {
       return '';
     }
   }
   getKeymapJsonUrl(): string {
     if (this.keyboardEntry && this.keymapEntry?.path) {
-      return `https://raw.githubusercontent.com/qmk-helper/qmk-database/master/keymaps/${this.keyboardEntry}/${this.keymapEntry.name}.keymap.json`;
+      return `https://raw.githubusercontent.com/qmk-helper/qmk-database/master/keymaps/${this.keyboardEntry.name}/${this.keymapEntry.name}.keymap.json`;
     } else {
       return '';
     }
