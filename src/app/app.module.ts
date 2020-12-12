@@ -10,7 +10,7 @@ import { KeyboardListModule } from './keyboard-list/keyboard-list.module';
     BrowserModule,
     BrowserAnimationsModule,
     KeyboardListModule,
-    RouterModule.forRoot([]),
+    RouterModule.forRoot([], { relativeLinkResolution: 'legacy' }),
   ],
   providers: [],
   bootstrap: [AppComponent],

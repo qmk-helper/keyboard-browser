@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { KeymapRendererComponent } from './keymap-renderer.component';
 
@@ -6,7 +6,7 @@ describe('KeymapRendererComponent', () => {
   let component: KeymapRendererComponent;
   let fixture: ComponentFixture<KeymapRendererComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [ KeymapRendererComponent ]
     })
