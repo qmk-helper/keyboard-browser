@@ -2,6 +2,7 @@ import { ScrollingModule } from '@angular/cdk/scrolling';
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatButtonModule } from '@angular/material/button';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatInputModule } from '@angular/material/input';
 import { MatListModule } from '@angular/material/list';
@@ -18,6 +19,7 @@ import { KeyboardListComponent } from './keyboard-list.component';
     ReactiveFormsModule,
     MatSelectModule,
     MatListModule,
+    MatButtonModule,
     MatInputModule,
     ScrollingModule,
     KeyboardViewerModule,

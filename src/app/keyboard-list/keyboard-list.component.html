@@ -133,6 +133,7 @@
               <a [href]="getKeyboardJsonUrl()"> Get info.json</a>
             </li>
           </ul>
+          <h3>VIA Supported: {{ !!viaKeymap }}</h3>
         </div>
       </div>
       <div class="col-xs-12 col-sm-6">
@@ -142,8 +143,20 @@
             <a [href]="getKeymapGithubUrl()"> View on Github</a>
           </li>
           <li>
-            <a [href]="getKeymapJsonUrl()"> Get keymap.json</a>
+            <a [href]="getKeymapJsonUrl()" download="keymap.json">
+              Get keymap.json</a
+            >
           </li>
+          <div *ngIf="viaKeymap">
+            <button
+              mat-raised-button
+              color="primary"
+              (click)="downloadViaKeymap()"
+              style="margin: 1em"
+            >
+              Download Keymap as via file
+            </button>
+          </div>
         </div>
       </div>
       <div class="col-xs-12" style="overflow: auto">
