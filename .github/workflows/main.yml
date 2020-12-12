@@ -24,6 +24,8 @@ jobs:
           persist-credentials: false
       - uses: actions/setup-node@v2.1.3
 
+      - name: Fix Git config
+        run: git config --global url."https://${{ secrets.PAT }}@github.com/".insteadOf ssh://git@github.com/
 
       - name: Install
         run: npm ci
