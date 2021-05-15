@@ -1,7 +1,8 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { MatSelectionListChange } from '@angular/material/list';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { saveAs } from 'file-saver';
+
 
 interface IDbEntry {
   json: any;
@@ -28,7 +29,9 @@ export class KeyboardListComponent implements OnInit {
   keyboardEntry: IDbEntry;
   keyboardJson: any;
   keyboardFilter = '';
-  selectedKeyboard;
+
+  selectedKeyboard: IDbEntry[];
+  selectedKeymap: IDbEntry[];
 
   keymapDb: IDbEntry[];
   keymapEntry: IDbEntry;
@@ -42,7 +45,7 @@ export class KeyboardListComponent implements OnInit {
 
   viaKeymap: IDbEntry;
 
-  constructor(private route: ActivatedRoute) {}
+  constructor(private route: ActivatedRoute, private router: Router) {}
 
   async ngOnInit(): Promise<void> {
     await fetch(
@@ -52,37 +55,53 @@ export class KeyboardListComponent implements OnInit {
       .then((keyboards) => {
         this.keyboardDb = keyboards;
       });
-    this.route.queryParams.subscribe((params) => {
-      this.keyboardFilter = params.keyboard;
+    this.route.queryParams.subscribe(async (params) => {
       console.log(params);
+      console.log(this.keyboardEntry?.name);
       const queryKeyboard = this.keyboardDb.find(
         (dbEntry) => dbEntry.name === params.keyboard
       );
+
       if (queryKeyboard) {
-        this.selectedKeyboard = [queryKeyboard];
-        this.setKeyboard(queryKeyboard);
+        if (queryKeyboard.name !== this.keyboardEntry?.name) {
+          this.selectedKeyboard = [queryKeyboard];
+          await this.setKeyboard(queryKeyboard);
+        }
+
+        console.log(this.keymapJson);
+        const queryKeymap = this.keymapDb.find(
+          (dbEntry) => dbEntry.name === params.keymap
+        );
+        console.log(queryKeymap);
+        if (queryKeymap) {
+          if (queryKeymap.name !== this.keymapEntry?.name) {
+            this.selectedKeymap = [queryKeymap];
+            await this.setKeymap(queryKeymap);
+          }
+        }
       }
     });
   }
 
   selectKeyboardEvent(event: MatSelectionListChange): void {
-    this.setKeyboard(event.options[0].value);
+    this.setKeyboard(event.option.value);
+    this.updateRoute();
   }
-  setKeyboard(keyboard: IDbEntry): void {
+  async setKeyboard(keyboard: IDbEntry): Promise<void> {
     this.keyboardEntry = keyboard;
 
     this.keymapDb = [];
     this.keymapEntry = undefined;
     this.keymapJson = undefined;
 
-    fetch(`${qmkHelperDbRawUrl}keymaps/${this.keyboardEntry.name}/keymaps.json`)
+   await fetch(`${qmkHelperDbRawUrl}keymaps/${this.keyboardEntry.name}/keymaps.json`)
       .then((response) => response.json())
       .then((keymaps) => {
         this.keymapDb = keymaps;
         this.viaKeymap = this.keymapDb.find((value) => value.name === 'via');
       });
 
-    fetch(`${qmkFirmwareRawUrl}${this.keyboardEntry.path}`)
+   await fetch(`${qmkFirmwareRawUrl}${this.keyboardEntry.path}`)
       .then(async (response) => {
         if (response.ok) {
           this.keyboardJson = await response.json();
@@ -90,14 +109,21 @@ export class KeyboardListComponent implements OnInit {
           alert('Unable to find info.json');
         }
       })
-      .catch(() => {
+      .catch((reason) => {
         alert('Unable to load info.json');
+        console.log('Unable to load info.json', reason);
       });
   }
 
-  selectKeymap(event: MatSelectionListChange): void {
-    this.keymapEntry = event.options[0].value;
-    fetch(this.getKeymapJsonUrl())
+  async selectKeymapEvent(event: MatSelectionListChange): Promise<void> {
+    await this.setKeymap(event.options[0].value);
+    this.updateRoute();
+  }
+  async setKeymap(keymap: IDbEntry) {
+    this.keymapJson = undefined;
+    this.keymapEntry = keymap;
+
+    await fetch(this.getKeymapJsonUrl())
       .then(async (response) => {
         if (response.ok) {
           this.keymapJson = await response.json();
@@ -105,10 +131,12 @@ export class KeyboardListComponent implements OnInit {
           alert('Unable to find keymap.json');
         }
       })
-      .catch(() => {
+      .catch((reason) => {
         alert('Unable to load keymap.json');
+        console.log('Unable to load keymap.json', reason);
       });
   }
+
   getKeymapGithubUrl(): string {
     if (this.keyboardEntry && this.keymapEntry?.name) {
       return `${qmkFirmwareGithubUrl}${this.keymapEntry.path}`;
@@ -185,5 +213,14 @@ export class KeyboardListComponent implements OnInit {
     });
 
     saveAs(blob, `${this.keymapJson.keymap}.via.json`);
+  }
+
+  private updateRoute() {
+    this.router.navigate([], {
+      queryParams: {
+        keyboard: this.keyboardEntry?.name,
+        keymap: this.keymapEntry?.name,
+      },
+    });
   }
 }

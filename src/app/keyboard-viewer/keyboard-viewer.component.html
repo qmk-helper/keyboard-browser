@@ -17,7 +17,7 @@
   >
     Copy layer for keyboard-layot-editor.com
   </button>
-  <p *ngIf="!qmkKeymap">{{ kleConverter.keyboard.layouts[i].name }}</p>
+  <p *ngIf="!qmkKeymap">{{ kleConverter.keyboard.layouts[i]?.name }}</p>
   <p *ngIf="qmkKeymap">LAYER_{{ i }}</p>
   <app-keymap-renderer
     [kleKeyboard]="kleConverter.kleKeyboard"

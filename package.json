@@ -1,6 +1,6 @@
 {
   "name": "keyboard-browser",
-  "version": "0.0.0",
+  "version": "1.0.1",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -23,9 +23,8 @@
     "@angular/platform-browser": "~11.0.4",
     "@angular/platform-browser-dynamic": "~11.0.4",
     "@angular/router": "~11.0.4",
-    "@qmk-helper/keyboard-converter": "git+https://github.com/qmk-helper/keyboard-converter.git",
-    "@qmk-helper/kle-serial": "git+https://github.com/qmk-helper/kle-serial.git",
-    "file-saver": "^2.0.5",
+    "@qmk-helper/keyboard-converter": "github:qmk-helper/keyboard-converter",
+    "@qmk-helper/kle-serial": "github:qmk-helper/kle-serial",
     "flexboxgrid": "^6.3.1",
     "normalize.css": "^8.0.1",
     "rxjs": "~6.6.3",
