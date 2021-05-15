@@ -43,7 +43,8 @@
       <mat-selection-list
         #keymapListItem
         [multiple]="false"
-        (selectionChange)="selectKeymap($event)"
+        [(ngModel)]="selectedKeymap"
+        (selectionChange)="selectKeymapEvent($event)"
       >
         <mat-list-option
           *ngFor="let keymapEntry of keymapDb | filter: keymapFilter"
@@ -150,6 +151,7 @@
         <app-keyboard-viewer
           [qmkKeyboard]="keyboardJson"
           [qmkKeymap]="keymapJson"
+          *ngIf="keymapJson"
         ></app-keyboard-viewer>
       </div>
     </div>
