@@ -120,6 +120,33 @@
               copy the complete keyboard or just individual layers. the code can
               then be pasted as raw data at KLE.
             </p>
+
+            <h2>Advanced Keycodes</h2>
+            <p>
+              Additioonal information in
+              <a
+                href="https://beta.docs.qmk.fm/using-qmk/software-features/feature_layers#switching-and-toggling-layers-id-switching-and-toggling-layers"
+                >QMK doc</a
+              >.
+            </p>
+            <ul>
+              <li><code>DF(layer)</code> - switches the Default Layer</li>
+              <li><code>MO(layer)</code> - MOmentarily activates layer</li>
+              <li>
+                <code>LM(layer, mod)</code> - like MO Layer with applied
+                Modifier
+              </li>
+              <li>
+                <code>LT(layer, kc)</code> - momentarily activates Layer when
+                held, and sends kc when Tapped.
+              </li>
+              <li><code>TG(layer)</code> - Toggle Layer</li>
+              <li>
+                <code>TO(layer)</code> - activates layer and de-activates all
+                other layers
+              </li>
+              <li><code>TT(layer)</code> - Layer Tap-Toggle</li>
+            </ul>
           </mat-expansion-panel>
         </mat-accordion>
       </div>
