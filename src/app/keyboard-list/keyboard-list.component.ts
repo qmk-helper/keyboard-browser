@@ -3,7 +3,6 @@ import { MatSelectionListChange } from '@angular/material/list';
 import { ActivatedRoute, Router } from '@angular/router';
 import { saveAs } from 'file-saver';
 
-
 interface IDbEntry {
   json: any;
   name: string;
@@ -94,14 +93,16 @@ export class KeyboardListComponent implements OnInit {
     this.keymapEntry = undefined;
     this.keymapJson = undefined;
 
-   await fetch(`${qmkHelperDbRawUrl}keymaps/${this.keyboardEntry.name}/keymaps.json`)
+    await fetch(
+      `${qmkHelperDbRawUrl}keymaps/${this.keyboardEntry.name}/keymaps.json`
+    )
       .then((response) => response.json())
       .then((keymaps) => {
         this.keymapDb = keymaps;
         this.viaKeymap = this.keymapDb.find((value) => value.name === 'via');
       });
 
-   await fetch(`${qmkFirmwareRawUrl}${this.keyboardEntry.path}`)
+    await fetch(`${qmkFirmwareRawUrl}${this.keyboardEntry.path}`)
       .then(async (response) => {
         if (response.ok) {
           this.keyboardJson = await response.json();
@@ -171,7 +172,7 @@ export class KeyboardListComponent implements OnInit {
       console.log('Downloading via map');
 
       await fetch(
-        `${qmkHelperDbRawUrl}keymaps/${this.keyboardEntry.name}/via.keymap.json`
+        `${qmkHelperDbRawUrl}keymaps/${this.keyboardEntry.name}/default.keymap.json`
       )
         .then(async (response) => {
           if (response.ok) {
@@ -180,8 +181,9 @@ export class KeyboardListComponent implements OnInit {
             alert('Unable to find via.keymap.json');
           }
         })
-        .catch(() => {
+        .catch((reason) => {
           alert('Unable to load via.keymap.json');
+          console.log('Unable to load via.keymap.json', reason);
         });
     }
     console.log('VIA', this.viaKeymap);
@@ -195,8 +197,8 @@ export class KeyboardListComponent implements OnInit {
       console.log('Error: Not all layers can be stored in VIA');
     }
     const viaJson = {
-      name: 'KPrepublic XD75',
-      vendorProductId: 2017752437,
+      name: 'Split Keyboard Kyria',
+      vendorProductId: 0x534b4b79,
       layers: [],
     };
 

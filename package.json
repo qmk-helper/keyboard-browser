@@ -25,6 +25,7 @@
     "@angular/router": "~11.0.4",
     "@qmk-helper/keyboard-converter": "github:qmk-helper/keyboard-converter",
     "@qmk-helper/kle-serial": "github:qmk-helper/kle-serial",
+    "file-saver": "^2.0.5",
     "flexboxgrid": "^6.3.1",
     "normalize.css": "^8.0.1",
     "rxjs": "~6.6.3",
